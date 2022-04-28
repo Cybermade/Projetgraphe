@@ -27,7 +27,44 @@ def degeneresence(graph):
         k+=1
 
     return k,kcenters
-                   
+def matulaandbeck(graph):
+    kcenters={}
+    n=len(graph)
+    L=[]
+    G={}
+    for k,v in graph.items():
+        G[k]=len(v)
+    #print(G)
+    D={} 
+    for k,v in graph.items():
+        if len(v) not in D:
+            D[len(v)]=[k]
+        else:
+            D[len(v)].append(k)
+        
+    #print(D)
+    k=0
+    #D=dict(sorted(D.items()))
+    #print(D)
+    #print(n)
+    for j in range(n):
+        for i in range(min(D),max(D)+1,1):
+            
+            if i in D and D[i]!=[]:
+                k=max(k,i)
+                L.insert(0,D[i][0])
+                D[i].remove(D[i][0])
+                for neighbor in graph[L[0]]:
+                    if neighbor not in L:
+                        D=cleanfromD(D,neighbor)
+                break
+        D=clearDic(D)
+    #print(L,D)
+    #print(len(L),len(graph))
+                    
+    
+    print("Matula and beck",k+1)
+
 def matulaandbeck(graph,kcenters):
     L={}
     G={}

@@ -63,7 +63,7 @@ def cleanfromD(D,neighbor):
         D[K-1].append(neighbor)
     else:
         D[K-1]=[neighbor]   
-    D=dict(sorted(D.items()))         
+    #D=dict(sorted(D.items()))         
     return D   
 
 def isDempty(D):
@@ -71,14 +71,15 @@ def isDempty(D):
         if len(v)!=0:return False
     return True
 
-
+def clearDic(D):
+    res = {k: v for k, v in D.items() if v!=[]}
+    return res
 def matulaandbeck(graph):
-    kcenters={}
     L=[]
     G={}
     for k,v in graph.items():
         G[k]=len(v)
-    #print(G)
+    
     D={} 
     for k,v in graph.items():
         if len(v) not in D:
@@ -86,25 +87,22 @@ def matulaandbeck(graph):
         else:
             D[len(v)].append(k)
         
-    #print(D)
+    
     k=0
-    D=dict(sorted(D.items()))
-    #print(D)
     
-    while(not isDempty(D)):
+    while(D):
+        i = min(D)
+        v = D[i][0]
+            
+        k=max(k,i)
+        L.insert(0,v)
+        D[i].remove(v)
+        for neighbor in graph[v]:
+            if neighbor not in L:
+                D=cleanfromD(D,neighbor)
+        D=clearDic(D)
+                
         
-        for i in range(min(D),max(D)+1,1):
-            if i in D and D[i]!=[]:
-                k=max(k,i)
-                L.insert(0,D[i][0])
-                D[i].remove(D[i][0])
-                #if len(D[i])==0:del D[i]
-                for neighbor in graph[L[0]]:
-                    if neighbor not in L:
-                        D=cleanfromD(D,neighbor)
-                break
-        #print(len(L))
-    
     #print(L,D)
     #print(len(L),len(graph))
                     
@@ -183,9 +181,10 @@ def main():
     graph = filetolist("test.csv")
     matulaandbeck(graph)
     #print(graph)
-    degen,kcenters = degeneresence(graph)
-    print("Degeneracy :",degen)
-    print("kcenters :",kcenters)
+    #degen,kcenters = degeneresence(graph)
+    #print("Degeneracy :",degen)
+    #print("kcenters :",kcenters)
+    
 
 # Main function calling
 if __name__=="__main__":     
