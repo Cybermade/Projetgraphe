@@ -74,52 +74,58 @@ def isDempty(D):
 def clearDic(D):
     res = {k: v for k, v in D.items() if v!=[]}
     return res
-def matulaandbeck(graph):
-    L=[]
-    G={}
-    for k,v in graph.items():
-        G[k]=len(v)
     
+def matulaandbeck(graph):
+    '''
+    -------------------------------------------------------------------TAKEN FROM WIKIPEDIA-----------------------------------------------------------------------------------------
+    1-Initialize an output list L.
+    2-Compute a number dv for each vertex v in G, the number of neighbors of v that are not already in L. Initially, these numbers are just the degrees of the vertices.
+    3-Initialize an array D such that D[i] contains a list of the vertices v that are not already in L for which dv = i.
+    4-Initialize k to 0.
+    5-Repeat n times:!!!What's n?
+    6-Scan the array cells D[0], D[1], ... until finding an i for which D[i] is nonempty.
+    7-Set k to max(k,i)
+    8-Select a vertex v from D[i]. Add v to the beginning of L and remove it from D[i].
+    9-For each neighbor w of v not already in L, subtract one from dw and move w to the cell of D corresponding to the new value of dw.
+    '''
+    #1
+    L=[]
+    #2 et 3
     D={} 
     for k,v in graph.items():
         if len(v) not in D:
             D[len(v)]=[k]
         else:
-            D[len(v)].append(k)
-        
-    
+            D[len(v)].append(k) 
+    #4
     k=0
-    
+    #5 Not n times but while there's still nodes in D (same thing i guess)(well it's working like this too!)
     while(D):
+        #6 no need to scan through D because with min(D), we get the min key with a value(node)
         i = min(D)
-        v = D[i][0]
-            
+
+        #7   
         k=max(k,i)
-        L.insert(0,v)
+
+        #8
+        v = D[i][0]
+        L.append(v)
         D[i].remove(v)
+
+        #9
         for neighbor in graph[v]:
             if neighbor not in L:
                 D=cleanfromD(D,neighbor)
+
+        #clear the dictionary from keys with empty values (Speed up the algorithm)
         D=clearDic(D)
                 
         
-    #print(L,D)
-    #print(len(L),len(graph))
+    
                     
     
-    print("Matula and beck",k+1)
-    """
-    D = dict(sorted(D.items()))
-    print(D)
-    k=0
-    for j in range(n):
-        i=0
-        while(i not in D or len(D[i])==0):
-            i+=1
-        v=D[i][0]
-        k=max(k,i)
-        
-        L.insert(0,v) """
+    return (k+1)
+    
 
 def opencsv(filename):
     f = open(filename, "r")
@@ -175,15 +181,15 @@ def main():
     L[8]=[6,7,9]
     L[9]=[8,6]
     L[10]=[6]  
-
-
+    graph = filetolist("test")
+    #graph = L
+    degenMB = matulaandbeck(graph)
+    print("Matula & Beck Degeneracy :",degenMB)
     
-    graph = filetolist("test.csv")
-    matulaandbeck(graph)
-    #print(graph)
-    #degen,kcenters = degeneresence(graph)
-    #print("Degeneracy :",degen)
-    #print("kcenters :",kcenters)
+    degen,kcenters = degeneresence(graph)
+    print("Degeneracy :",degen)
+    print("Kcenters Node : Kcenter")
+    print("kcenters :",kcenters)
     
 
 # Main function calling
