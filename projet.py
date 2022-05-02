@@ -181,15 +181,16 @@ def main():
     L[8]=[6,7,9]
     L[9]=[8,6]
     L[10]=[6]  
-    graph = filetolist("test")
+    graph = filetolist("emails.txt")
     #graph = L
-    degenMB = matulaandbeck(graph)
-    print("Matula & Beck Degeneracy :",degenMB)
+    #degenMB = matulaandbeck(graph)
+    #print("Matula & Beck Degeneracy :",degenMB)
     
     degen,kcenters = degeneresence(graph)
-    print("Degeneracy :",degen)
+    
     print("Kcenters Node : Kcenter")
     print("kcenters :",kcenters)
+    print("Degeneracy :",degen)
     
 
 # Main function calling
