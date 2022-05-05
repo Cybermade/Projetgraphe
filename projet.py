@@ -1,4 +1,5 @@
-def nodesofdegreelessorequal(graph,degree):
+import copy
+def nodesOfDegreeLessOrEqual(graph,degree):
     List=[]
     
     for k,v in graph.items():
@@ -7,22 +8,22 @@ def nodesofdegreelessorequal(graph,degree):
     
     return List
 
-def deletenodes(graph,nodes):
+def deleteNodes(graph,nodes):
     for node in nodes:
         
         for neighbor in graph[node]:
             if neighbor != node:
                 while node in graph[neighbor]:
                     graph[neighbor].remove(node)
-            #print(graph[neighbor],neighbor,node)
+            
         del graph[node]
 
 
-def assignkcenter(nodes,kcenters,k):
+def assignKcenter(nodes,kcenters,k):
     for i in nodes:
         kcenters[i]=k
     
-def mindegree(graph):
+def minDegree(graph):
     L=[]
 
     for v in graph.values():
@@ -36,34 +37,35 @@ def degeneresence (graph):
 
     maxdegree = []
     
-    maxdegree.append(mindegree(graph))
+    maxdegree.append(minDegree(graph))
     while(graph):
-        if(len(maxdegree)!=0 and maxdegree[-1]<mindegree(graph)):
-            maxdegree.append(mindegree(graph))
+        if(len(maxdegree)!=0 and maxdegree[-1]<minDegree(graph)):
+            maxdegree.append(minDegree(graph))
 
-        L = nodesofdegreelessorequal(graph,maxdegree[-1])
+        L = nodesOfDegreeLessOrEqual(graph,maxdegree[-1])
         
-        deletenodes(graph,L)
+        deleteNodes(graph,L)
         
-        assignkcenter(L,kcenters,maxdegree[-1])
+        assignKcenter(L,kcenters,maxdegree[-1])
 
 
     kcenters = dict(sorted(kcenters.items()))
     return max(kcenters.values())+1,kcenters
         
-def cleanfromD(D,neighbor):
+def cleanfromD(D,neighbor,graph):
     K=-1
-    #print(neighbor)
-    for k,v in D.items():
-        if neighbor in v:
-            D[k].remove(neighbor)
-            K=k
-    #print(K-1,neighbor)
+    
+    for i in range(len(graph[neighbor])+1):
+        if i in D and neighbor in D[i]:
+            D[i].remove(neighbor)
+            K=i
+            break
+    
     if K-1 in D:
         D[K-1].append(neighbor)
     else:
         D[K-1]=[neighbor]   
-    #D=dict(sorted(D.items()))         
+             
     return D   
 
 def isDempty(D):
@@ -100,8 +102,10 @@ def matulaandbeck(graph):
     #4
     k=0
     #5 Not n times but while there's still nodes in D (same thing i guess)(well it's working like this too!)
+    
     while(D):
         #6 no need to scan through D because with min(D), we get the min key with a value(node)
+        
         i = min(D)
 
         #7   
@@ -111,14 +115,17 @@ def matulaandbeck(graph):
         v = D[i][0]
         L.append(v)
         D[i].remove(v)
-
+        
         #9
         for neighbor in graph[v]:
             if neighbor not in L:
-                D=cleanfromD(D,neighbor)
-
+                D=cleanfromD(D,neighbor,graph)
+        
         #clear the dictionary from keys with empty values (Speed up the algorithm)
         D=clearDic(D)
+
+        
+        
                 
         
     
@@ -169,7 +176,7 @@ def filetolist(filename):
 def main():
     # function calling
     
-
+    #L is a test graph 
     L={}
     L[1]=[2,3,4,5,6]
     L[2]=[1,7]
@@ -181,16 +188,42 @@ def main():
     L[8]=[6,7,9]
     L[9]=[8,6]
     L[10]=[6]  
-    graph = filetolist("emails.txt")
-    #graph = L
-    #degenMB = matulaandbeck(graph)
-    #print("Matula & Beck Degeneracy :",degenMB)
+    ## ca-AstroPh.mtx 57
+    ## ca-CondMat 26 
+    ## delaunay_n14.mtx 5
+    ##inf-power.mtx 6
+    ##inf-USAIR97.mtx 27
+    ##Stranke94.mtx 10
     
-    degen,kcenters = degeneresence(graph)
+    graph = filetolist("ca-CondMat")
+    graphMB = copy.deepcopy(graph)
+
+    choix = 'False'
+    while(choix!='0' and choix!='1' and choix!='2'and choix!='3'):
+        choix = input("Pick :\n1- Base algorithm and Kcenters\n2- Matula & Beck Algorithm\n3- Both\n0- Exit\n")
     
-    print("Kcenters Node : Kcenter")
-    print("kcenters :",kcenters)
-    print("Degeneracy :",degen)
+    if choix=='1':
+        degen,kcenters = degeneresence(graph)
+        print("kcenters :",kcenters)
+        print("Degeneracy :",degen)
+    elif choix=='2':
+        degenMB = matulaandbeck(graphMB)
+        print("Matula & Beck Degeneracy :",degenMB)
+    
+    elif choix=='3':
+        degen,kcenters = degeneresence(graph)
+        print("kcenters :",kcenters)
+        print("Degeneracy :",degen)
+        degenMB = matulaandbeck(graphMB)
+        print("Matula & Beck Degeneracy :",degenMB)
+    elif choix=='0':exit()
+
+    
+    
+    
+    
+    
+    
     
 
 # Main function calling
